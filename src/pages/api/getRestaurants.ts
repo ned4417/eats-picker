@@ -3,7 +3,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const apiKey = "AIzaSyAv4k61NzGM_zRuYgfI0QJH8R-6fWr7R9Y"; // Load your API key from environment variables
+  const apiKey = process.env.GOOGLE_API_KEY;; // Load your API key from environment variables
   const address = req.query.address as string; // Get the address from the query parameter
 
   try {
