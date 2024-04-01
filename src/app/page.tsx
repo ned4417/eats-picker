@@ -47,8 +47,8 @@ const Home: React.FC = () => {
 
   const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => {
     setSelectedAddress(place.description);
-    console.log('Selected Place: ', place);
-    fetchRandomRestaurant(selectedAddress);
+    console.log('Selected Place TTTTTTTTTTTTTTTTTTTTTTTTT: ', place);
+    fetchRandomRestaurant(place.description);
   };
 
 
@@ -65,7 +65,7 @@ const Home: React.FC = () => {
       </div>
 
       <div className="w-1/2">
-      <GoogleAddressAutocomplete onSelect={handleSelectPlace} />
+      <GoogleAddressAutocomplete onSelect={handleSelectPlace} setSelectedAddress={setSelectedAddress} />
       </div>
 
 
@@ -82,7 +82,7 @@ const Home: React.FC = () => {
 
       <div>
           {/* Conditionally render the "Choose Another Restaurant" button */}
-          {!selectedAddress && randomRestaurant && (
+          {selectedAddress && randomRestaurant && (
           <button className="btn btn-primary" onClick={chooseAnotherRestaurant}>Roll the culinary dice again</button>
           )}
       </div>

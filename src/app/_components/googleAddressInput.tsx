@@ -1,12 +1,12 @@
 // components/GoogleAddressAutocomplete.tsx
 import React, { useState } from 'react';
-import axios from 'axios';
 
 interface GoogleAddressAutocompleteProps {
-    onSelect: (restaurant: any) => void; // Adjust the type according to your API response
-  }
+  onSelect: (place: google.maps.places.AutocompletePrediction) => void;
+  setSelectedAddress: React.Dispatch<React.SetStateAction<string>>;
+}
 
-const GoogleAddressAutocomplete: React.FC<GoogleAddressAutocompleteProps> = ({ onSelect }) => {
+const GoogleAddressAutocomplete: React.FC<GoogleAddressAutocompleteProps> = ({ onSelect, setSelectedAddress }) => {
   const [autocompleteInput, setAutocompleteInput] = useState('');
   const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
 
@@ -27,17 +27,9 @@ const GoogleAddressAutocomplete: React.FC<GoogleAddressAutocompleteProps> = ({ o
   // Handle the selection of a suggestion
   const handleSelectSuggestion = (suggestion: google.maps.places.AutocompletePrediction) => {
     setAutocompleteInput(suggestion.description);
+    setSelectedAddress(suggestion.description); // Set the selected address in page.tsx state
+    onSelect(suggestion); // Pass the selected suggestion back to page.tsx
     setPredictions([]);
-  
-    // Call your backend API to get a random restaurant
-    axios.get(`/api/getRestaurants?address=${encodeURIComponent(suggestion.description)}`)
-      .then(response => {
-        onSelect(response.data); // Pass the restaurant data to the onSelect function
-      })
-      .catch(error => {
-        console.error('Error fetching restaurant:', error);
-        // Handle error
-      });
   };
 
   return (
