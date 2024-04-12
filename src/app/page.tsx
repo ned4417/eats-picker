@@ -87,28 +87,6 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
 
 
 
-// Function to calculate driving distance using Google Maps Directions API
-const calculateDrivingDistance = async (originLat: number, originLon: number, destLat: number, destLon: number) => {
-  try {
-    const response = await axios.get(`https://maps.googleapis.com/maps/api/directions/json`, {
-      params: {
-        origin: `${originLat},${originLon}`,
-        destination: `${destLat},${destLon}`,
-        mode: 'driving',
-        key: process.env.GOOGLE_API_KEY,
-      },
-    });
-
-    const distance = response.data.routes[0].legs[0].distance.value; // Distance in meters
-    return distance / 1000; // Convert meters to kilometers
-  } catch (error) {
-    console.error('Error calculating driving distance:', error);
-    throw error;
-  }
-};
-
-//const drivingDistance = await calculateDrivingDistance(Number(selectedAddress), Number(originLon), Number(randomRestaurant.latitude), Number(randomRestaurant.longitude));
-
   return (
     <main data-theme="dark" className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm lg:flex">
@@ -136,7 +114,7 @@ const calculateDrivingDistance = async (originLat: number, originLon: number, de
     </div>
   )}
 </div>
-      <div className="p-6 w-full h-96 overflow-hidden">
+      <div className="p-6 w-3/4 h-96 overflow-hidden rounded-md">
         <ImageCarousel photos={currentPhotos} />
       </div>
       <div>

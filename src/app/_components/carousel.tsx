@@ -37,7 +37,7 @@ const responsive = {
         >
           {photos.map((photo, index) => (
             <div key={index} className="multi-carousel-item flex items-center justify-center h-full shadow-md rounded-md p-1 ">
-              <img src={photo} alt={`Item ${index + 1}`} className="h-full rounded-md object-cover" />
+              <img src={photo} alt={`Item ${index + 1}`} className="h-full  rounded-md" />
             </div>
           ))}
         </MultiCarousel>
