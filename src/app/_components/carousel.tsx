@@ -1,68 +1,48 @@
-// export default function Carousel() {
-//     return (
-//         <div className="carousel rounded-box">
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.jpg" alt="Burger" />
-//         </div> 
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.jpg" alt="Burger" />
-//         </div> 
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.jpg" alt="Burger" />
-//         </div> 
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1494253109108-2e30c049369b.jpg" alt="Burger" />
-//         </div> 
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.jpg" alt="Burger" />
-//         </div> 
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1559181567-c3190ca9959b.jpg" alt="Burger" />
-//         </div> 
-//         <div className="carousel-item">
-//           <img src="https://daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.jpg" alt="Burger" />
-//         </div>
-//       </div>
-//     );
-//   }
+import MultiCarousel from "react-multi-carousel";
 
-
-export default function Carousel({ photos }: { photos: string[] | null }) {
-  if (!photos || photos.length === 0) {
-      return (
-        <div className="carousel rounded-box">
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.jpg" alt="Burger" />
-        </div> 
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.jpg" alt="Burger" />
-        </div> 
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.jpg" alt="Burger" />
-        </div> 
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1494253109108-2e30c049369b.jpg" alt="Burger" />
-        </div> 
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.jpg" alt="Burger" />
-        </div> 
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1559181567-c3190ca9959b.jpg" alt="Burger" />
-        </div> 
-        <div className="carousel-item">
-          <img src="https://daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.jpg" alt="Burger" />
-        </div>
-      </div>
-      )
+const responsive = {
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 6,
+    slidesToSlide: 3
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 464 },
+    items: 4,
+    slidesToSlide: 2
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 1,
+    slidesToSlide: 1
   }
+};
 
+ const ImageCarousel = ({ photos }: { photos: string[] }) => {
   return (
-    <div className="carousel rounded-box">
-        {photos.map((photo, index) => (
-            <div className="carousel-item" key={index}>
-                <img src={photo} alt={`Restaurant ${index}`} className="object-cover w-full h-full" />
+    <div className="carousel-container w-full rounded-md overflow-hidden">
+        <MultiCarousel
+          swipeable={false}
+          draggable={false}
+          showDots={true}
+          responsive={responsive}
+          ssr={true}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={10000}
+          keyBoardControl={true}
+          customTransition="all .5"
+          transitionDuration={1500}
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {photos.map((photo, index) => (
+            <div key={index} className="multi-carousel-item flex items-center justify-center h-full shadow-md rounded-md p-1 ">
+              <img src={photo} alt={`Item ${index + 1}`} className="h-full rounded-md object-cover" />
             </div>
-        ))}
+          ))}
+        </MultiCarousel>
     </div>
   );
-}
+};
+
+export default ImageCarousel;

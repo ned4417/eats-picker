@@ -4,15 +4,25 @@ import dynamic from 'next/dynamic';
 import GoogleAddressAutocomplete from './_components/googleAddressInput';
 const Carousel = dynamic(() => import('./_components/carousel'));
 import axios from 'axios';
+import ImageCarousel from './_components/carousel';
+import "react-multi-carousel/lib/styles.css";
 
 const Home: React.FC = () => {
   const [randomRestaurant, setRandomRestaurant] = useState<any>(null); // Adjust the type according to your API response
   const [selectedAddress, setSelectedAddress] = useState<string>('');
-  const [selectedDistance, setSelectedDistance] = useState<string>('5');
+  const [selectedDistance, setSelectedDistance] = useState<string>('10');
   const [originLat, setOriginLat] = useState<string>('');
   const [originLon, setOriginLon] = useState<string>('');
   const autocompleteRef = useRef<HTMLInputElement>(null);
-
+  const [currentPhotos, setCurrentPhotos] = useState<string[]>([
+    "https://daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.jpg",
+    "https://daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.jpg",
+    "https://daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.jpg",
+    "https://daisyui.com/images/stock/photo-1494253109108-2e30c049369b.jpg",
+    "https://daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.jpg",
+    "https://daisyui.com/images/stock/photo-1559181567-c3190ca9959b.jpg",
+    "https://daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.jpg"
+  ]);
 
   // const destLat = randomRestaurant.latitude; // Latitude of the destination (restaurant)
   // const destLon = randomRestaurant.longitude; // Longitude of the destination (restaurant)
@@ -38,6 +48,12 @@ const Home: React.FC = () => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (randomRestaurant && randomRestaurant.photos) {
+      setCurrentPhotos(randomRestaurant.photos);
+    }
+  }, [randomRestaurant]);
 
  // Function to fetch and set random restaurant data
 const fetchRandomRestaurant = (address: string, radius: string) => {
@@ -104,42 +120,31 @@ const calculateDrivingDistance = async (originLat: number, originLon: number, de
       </div>
 
       <div className="w-1/2">
-        <label className="label">Distance from Address to search</label>
+        <label className="label">Search Radius from Address to search: {selectedDistance} mi</label>
         <input type="range" min={5} max="30" value={selectedDistance} className="range range-accent" onChange={handleSliderOnChange} />
-        <label className="label">Miles away from selected address: {selectedDistance}</label>
       </div>
 
 
       <div>
-          {/* Conditionally render restaurant details */}
-          {randomRestaurant && (
-          <div className="p-6">
-            <p className="text-lg mb-2">Name: {randomRestaurant.name}</p>
-            <p className="text-lg">Address: {randomRestaurant.formatted_address}</p>
-            <p className="text-lg">Photo: {randomRestaurant.photo}</p>
-            {/* Add more restaurant details as needed */}
-          </div>
-          )}
+  {/* Conditionally render restaurant details */}
+  {randomRestaurant && (
+    <div className="p-6 text-center">
+      <p className="text-3xl mb-2 font-bold">{randomRestaurant.name}</p>
+      <p className="text-2xl">{randomRestaurant.formatted_address}</p>
+      <p className="text-lg pt-3">Distance from selected address: {randomRestaurant.distance}</p>
+      {/* Add more restaurant details as needed */}
+    </div>
+  )}
+</div>
+      <div className="p-6 w-full h-96 overflow-hidden">
+        <ImageCarousel photos={currentPhotos} />
       </div>
-
       <div>
           {/* Conditionally render the "Choose Another Restaurant" button */}
           {selectedAddress && randomRestaurant && (
           <button className="btn btn-primary" onClick={chooseAnotherRestaurant}>Roll the culinary dice again</button>
           )}
-      </div>
-      <div className="p-6">
-            {randomRestaurant ? (
-                <>
-                    <Carousel photos={randomRestaurant.photos || null} />
-                </>
-            ) : (
-                <>
-                    <Carousel photos={null} />
-                </>
-            )}
-        </div>
-      
+      </div>      
     </main>
   );
 };

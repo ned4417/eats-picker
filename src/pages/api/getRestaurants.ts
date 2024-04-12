@@ -11,7 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const apiKey = process.env.GOOGLE_API_KEY;; // Load your API key from environment variables
   const address = req.query.address as string; // Get the address from the query parameter
   const radiusInMeters = milesToMeters(Number(req.query.radius)); // Convert the radius from miles to meters
-  console.log(radiusInMeters)
 
 
   try {
@@ -49,8 +48,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Add photos to the random restaurant object
       randomRestaurant.photos = photos;
 
+      ///////////////////////////////////// GET Distance ///////////////////////////////////////
+      // Use Google Maps Distance Matrix API to calculate distance
+      // Use Google Maps Distance Matrix API to calculate distance
+      const distanceResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${encodeURIComponent(address)}&destinations=${encodeURIComponent(randomRestaurant.formatted_address)}&key=${apiKey}`
+      );
+      console.log(distanceResponse);
 
-      console.log('Random restaurant:', randomRestaurant);
+      if (!distanceResponse.ok) {
+        throw new Error('Failed to fetch distance');
+      }
+
+      const distanceData = await distanceResponse.json();
+      let distanceText = 'N/A'; // Default value if distance data is not available
+
+      if (distanceData.rows && distanceData.rows.length > 0 && distanceData.rows[0].elements && distanceData.rows[0].elements.length > 0) {
+        distanceText = distanceData.rows[0].elements[0].distance.text;
+      }
+
+      // Add distance to the random restaurant object
+      randomRestaurant.distance = distanceText;
+
+
+      /////////////////////////////////////////////////////////////////////////////////////////
+
+
+      //console.log('Random restaurant:', randomRestaurant);
       res.status(200).json(randomRestaurant);
     } else {
       res.status(404).json({ error: 'No restaurants found near the address' });
