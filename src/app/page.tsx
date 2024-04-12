@@ -6,6 +6,7 @@ const Carousel = dynamic(() => import('./_components/carousel'));
 import axios from 'axios';
 import ImageCarousel from './_components/carousel';
 import "react-multi-carousel/lib/styles.css";
+import grubGuideLogo from '../../public/grubguide_logo_bg-removebg-preview.png';
 
 const Home: React.FC = () => {
   const [randomRestaurant, setRandomRestaurant] = useState<any>(null); // Adjust the type according to your API response
@@ -90,7 +91,7 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
   return (
     <main data-theme="dark" className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm lg:flex">
-        <h1 className="text-4xl font-bold text-center">Eats Picker!</h1>        
+      <img src={grubGuideLogo.src} alt="Description of your image" />
       </div>
 
       <div className="w-1/2">
