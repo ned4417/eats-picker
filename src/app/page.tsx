@@ -114,7 +114,7 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
     </div>
   )}
 </div>
-      <div className="p-6 w-3/4 h-96 overflow-hidden rounded-md">
+      <div className="p-6 w-3/4 h-96 overflow-hidden">
         <ImageCarousel photos={currentPhotos} />
       </div>
       <div>
