@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 interface GoogleAddressAutocompleteProps {
   onSelect: (place: google.maps.places.AutocompletePrediction) => void;
   setSelectedAddress: React.Dispatch<React.SetStateAction<string>>;
+  radius?: string;
 }
 
 const GoogleAddressAutocomplete: React.FC<GoogleAddressAutocompleteProps> = ({ onSelect, setSelectedAddress }) => {
