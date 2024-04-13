@@ -1,6 +1,7 @@
 "use client"; // This is a client component 👈🏽
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useMediaQuery } from 'react-responsive';
 import GoogleAddressAutocomplete from './_components/googleAddressInput';
 const Carousel = dynamic(() => import('./_components/carousel'));
 import axios from 'axios';
@@ -86,6 +87,10 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
   }
 
 
+  const isSmallScreen = useMediaQuery({ maxWidth: 640 });
+  const searchLabelText = isSmallScreen ? "Search Radius: " : "Search Radius from Address to search: ";
+  const distanceLabelText = isSmallScreen ? "Distance: " : "Distance from selected address: ";
+
 
 
   return (
@@ -94,12 +99,12 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
       <img src={grubGuideLogo.src} alt="Description of your image" />
       </div>
 
-      <div className="w-1/2">
+      <div className="sm:w-full md:w-full lg:w-1/2">
       <GoogleAddressAutocomplete onSelect={handleSelectPlace} setSelectedAddress={setSelectedAddress} radius={selectedDistance} />
       </div>
 
-      <div className="w-1/2">
-        <label className="label">Search Radius from Address to search: {selectedDistance} mi</label>
+      <div className="sm:w-full lg:w-1/2">
+        <label className="label">{searchLabelText} {selectedDistance} mi</label>
         <input type="range" min={5} max="30" value={selectedDistance} className="range range-accent" onChange={handleSliderOnChange} />
       </div>
 
@@ -107,21 +112,21 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
       <div>
   {/* Conditionally render restaurant details */}
   {randomRestaurant && (
-    <div className="p-6 text-center">
-      <p className="text-3xl mb-2 font-bold">{randomRestaurant.name}</p>
-      <p className="text-2xl">{randomRestaurant.formatted_address}</p>
-      <p className="text-lg pt-3">Distance from selected address: {randomRestaurant.distance}</p>
+    <div className=" sm:p-2 lg:p-6 text-center">
+      <p className="sm:text-lg md:text-xg lg:text-3xl mb-2 font-bold">{randomRestaurant.name}</p>
+      <p className="sm:text-md md:text-lg lg:text-2xl">{randomRestaurant.formatted_address}</p>
+      <p className="sm:text-sm md:text-md lg:text-lg pt-3">{distanceLabelText} {randomRestaurant.distance}</p>
       {/* Add more restaurant details as needed */}
     </div>
   )}
 </div>
-      <div className="p-6 w-3/4 h-96 overflow-hidden">
-        <ImageCarousel photos={currentPhotos} />
-      </div>
+    <div className="sm:p-2 lg:p-6 w-full sm:h-48 lg:h-96 overflow-hidden">
+      <ImageCarousel photos={currentPhotos} />
+    </div>
       <div>
           {/* Conditionally render the "Choose Another Restaurant" button */}
           {selectedAddress && randomRestaurant && (
-          <button className="btn btn-primary" onClick={chooseAnotherRestaurant}>Roll the culinary dice again</button>
+          <button className="mt-2 btn btn-primary" onClick={chooseAnotherRestaurant}>Roll the culinary dice again</button>
           )}
       </div>      
     </main>
