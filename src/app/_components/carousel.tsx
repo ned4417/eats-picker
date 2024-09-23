@@ -9,8 +9,8 @@ const responsive = {
   },
   tablet: {
     breakpoint: { max: 1024, min: 464 },
-    items: 4,
-    slidesToSlide: 2
+    items: 2,
+    slidesToSlide: 1
   },
   mobile: {
     breakpoint: { max: 464, min: 0 },
@@ -23,7 +23,7 @@ const responsive = {
   return (
     <div className="carousel-container w-full rounded-md overflow-hidden">
         <MultiCarousel
-          swipeable={false}
+          swipeable={true}
           draggable={false}
           showDots={true}
           responsive={responsive}
