@@ -1,9 +1,10 @@
 import MultiCarousel from "react-multi-carousel";
+import Image from "next/image";
 
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
-    items: 6,
+    items: 5,
     slidesToSlide: 3
   },
   tablet: {
@@ -37,7 +38,13 @@ const responsive = {
         >
           {photos.map((photo, index) => (
             <div key={index} className="multi-carousel-item flex items-center justify-center h-full shadow-md rounded-md p-1 ">
-              <img src={photo} alt={`Item ${index + 1}`} className="h-full rounded-md object-cover" />
+              <Image
+                src={photo}
+                alt={`Item ${index + 1}`}
+                width={300} // Specify one dimension
+                height={300} // Specify the other dimension
+                className="h-full rounded-md object-cover"
+              />
             </div>
           ))}
         </MultiCarousel>

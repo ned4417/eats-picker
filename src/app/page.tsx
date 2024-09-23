@@ -7,7 +7,13 @@ const Carousel = dynamic(() => import('./_components/carousel'));
 import axios from 'axios';
 import ImageCarousel from './_components/carousel';
 import "react-multi-carousel/lib/styles.css";
+import Image from 'next/image';
 import grubGuideLogo from '../../public/grubguide_logo_bg-removebg-preview.png';
+import breakfast from '../../public/breakfast.jpg';
+import burger from '../../public/burger.jpg';
+import dessert from '../../public/dessert.jpg';
+import fancy from '../../public/fancy.jpg';
+import tacos from '../../public/tacos.jpg';
 
 const Home: React.FC = () => {
   const [randomRestaurant, setRandomRestaurant] = useState<any>(null); // Adjust the type according to your API response
@@ -17,18 +23,29 @@ const Home: React.FC = () => {
   const [originLon, setOriginLon] = useState<string>('');
   const autocompleteRef = useRef<HTMLInputElement>(null);
   const [currentPhotos, setCurrentPhotos] = useState<string[]>([
-    "https://daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.jpg",
-    "https://daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.jpg",
-    "https://daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.jpg",
-    "https://daisyui.com/images/stock/photo-1494253109108-2e30c049369b.jpg",
-    "https://daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.jpg",
-    "https://daisyui.com/images/stock/photo-1559181567-c3190ca9959b.jpg",
-    "https://daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.jpg"
+    breakfast.src,
+    burger.src,
+    dessert.src,
+    fancy.src,
+    tacos.src
   ]);
+  const [searchLabelText, setSearchLabelText] = useState("Search Radius from Address to search: ");
+  const [distanceLabelText, setDistanceLabelText] = useState("Distance from selected address: ");
+  const isSmallScreen = useMediaQuery({ maxWidth: 640 });
 
   // const destLat = randomRestaurant.latitude; // Latitude of the destination (restaurant)
   // const destLon = randomRestaurant.longitude; // Longitude of the destination (restaurant)
 
+  useEffect(() => {
+    // Update label texts after the component mounts
+    if (isSmallScreen) {
+      setSearchLabelText("Search Radius: ");
+      setDistanceLabelText("Distance: ");
+    } else {
+      setSearchLabelText("Search Radius from Address to search: ");
+      setDistanceLabelText("Distance from selected address: ");
+    }
+  }, [isSmallScreen]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -86,17 +103,10 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
     setSelectedDistance(event.target.value);
   }
 
-
-  const isSmallScreen = useMediaQuery({ maxWidth: 640 });
-  const searchLabelText = isSmallScreen ? "Search Radius: " : "Search Radius from Address to search: ";
-  const distanceLabelText = isSmallScreen ? "Distance: " : "Distance from selected address: ";
-
-
-
   return (
     <main data-theme="dark" className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm lg:flex">
-      <img src={grubGuideLogo.src} alt="Description of your image" />
+      <Image src={grubGuideLogo} alt="Grub Guide Logo" className="w-full" />
       </div>
 
       <div className="sm:w-full md:w-full lg:w-1/2">
