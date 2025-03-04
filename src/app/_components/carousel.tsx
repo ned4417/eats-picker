@@ -34,10 +34,10 @@ const Modal = memo(({ isOpen, onClose, children, currentIndex, totalItems, onPre
   onPrev: () => void;
   onNext: () => void;
 }) => {
-  if (!isOpen) return null;
-
   // Handle keyboard navigation
   useEffect(() => {
+    if (!isOpen) return;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') onPrev();
@@ -52,7 +52,9 @@ const Modal = memo(({ isOpen, onClose, children, currentIndex, totalItems, onPre
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [onClose, onPrev, onNext]);
+  }, [isOpen, onClose, onPrev, onNext]);
+  
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
