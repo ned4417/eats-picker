@@ -1,5 +1,6 @@
 import MultiCarousel from "react-multi-carousel";
 import Image from "next/image";
+import { memo } from "react";
 
 const responsive = {
   desktop: {
@@ -19,37 +20,47 @@ const responsive = {
   }
 };
 
- const ImageCarousel = ({ photos }: { photos: string[] }) => {
+const CarouselItem = memo(({ photo, index }: { photo: string; index: number }) => (
+  <div className="multi-carousel-item flex items-center justify-center h-full shadow-md rounded-md p-1">
+    <Image
+      src={photo}
+      alt={`Item ${index + 1}`}
+      width={300}
+      height={300}
+      className="h-full rounded-md object-cover"
+      loading={index === 0 ? "eager" : "lazy"}
+      quality={85}
+    />
+  </div>
+));
+
+CarouselItem.displayName = 'CarouselItem';
+
+const ImageCarousel = memo(({ photos }: { photos: string[] }) => {
   return (
     <div className="carousel-container w-full rounded-md overflow-hidden">
-        <MultiCarousel
-          swipeable={true}
-          draggable={false}
-          showDots={true}
-          responsive={responsive}
-          ssr={true}
-          infinite={true}
-          autoPlay={true}
-          autoPlaySpeed={10000}
-          keyBoardControl={true}
-          customTransition="all .5"
-          transitionDuration={1500}
-          removeArrowOnDeviceType={["tablet", "mobile"]}
-        >
-          {photos.map((photo, index) => (
-            <div key={index} className="multi-carousel-item flex items-center justify-center h-full shadow-md rounded-md p-1 ">
-              <Image
-                src={photo}
-                alt={`Item ${index + 1}`}
-                width={300} // Specify one dimension
-                height={300} // Specify the other dimension
-                className="h-full rounded-md object-cover"
-              />
-            </div>
-          ))}
-        </MultiCarousel>
+      <MultiCarousel
+        swipeable={true}
+        draggable={false}
+        showDots={true}
+        responsive={responsive}
+        ssr={true}
+        infinite={true}
+        autoPlay={true}
+        autoPlaySpeed={10000}
+        keyBoardControl={true}
+        customTransition="all .5"
+        transitionDuration={1500}
+        removeArrowOnDeviceType={["tablet", "mobile"]}
+      >
+        {photos.map((photo, index) => (
+          <CarouselItem key={index} photo={photo} index={index} />
+        ))}
+      </MultiCarousel>
     </div>
   );
-};
+});
+
+ImageCarousel.displayName = 'ImageCarousel';
 
 export default ImageCarousel;
