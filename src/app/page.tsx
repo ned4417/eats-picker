@@ -21,6 +21,8 @@ const Home: React.FC = () => {
   const [originLat, setOriginLat] = useState<string>('');
   const [originLon, setOriginLon] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isGettingLocation, setIsGettingLocation] = useState<boolean>(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const autocompleteRef = useRef<HTMLInputElement>(null);
   const [currentPhotos, setCurrentPhotos] = useState<string[]>([
     breakfast.src,
@@ -78,6 +80,53 @@ const Home: React.FC = () => {
       });
   };
 
+  // Function to handle getting the user's current location
+  const handleGetCurrentLocation = () => {
+    setIsGettingLocation(true);
+    setLocationError(null);
+    
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      setIsGettingLocation(false);
+      return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          // Use our server-side API endpoint for reverse geocoding
+          const response = await axios.get(
+            `/api/reverseGeocode?lat=${position.coords.latitude}&lng=${position.coords.longitude}`
+          );
+          
+          if (response.data && response.data.address) {
+            const address = response.data.address;
+            setSelectedAddress(address);
+            // Fetch restaurants using the obtained address
+            fetchRandomRestaurant(address, selectedDistance);
+          } else {
+            setLocationError("Could not determine your address");
+          }
+        } catch (error) {
+          console.error("Error reverse geocoding:", error);
+          setLocationError("Error determining your location");
+        } finally {
+          setIsGettingLocation(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setLocationError(
+          error.code === 1 
+            ? "Location access denied. Please enable location services."
+            : "Error getting your location"
+        );
+        setIsGettingLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => {
     setSelectedAddress(place.description);
     fetchRandomRestaurant(place.description, selectedDistance);
@@ -112,13 +161,33 @@ const Home: React.FC = () => {
 
       {/* Search section */}
       <div className="w-full max-w-xl px-2 space-y-4 mb-6">
-        <div className="w-full">
-          <GoogleAddressAutocomplete 
-            onSelect={handleSelectPlace} 
-            setSelectedAddress={setSelectedAddress} 
-            radius={selectedDistance} 
-          />
+        <div className="flex w-full gap-2">
+          <div className="flex-grow">
+            <GoogleAddressAutocomplete 
+              onSelect={handleSelectPlace} 
+              setSelectedAddress={setSelectedAddress} 
+              radius={selectedDistance} 
+            />
+          </div>
+          <button 
+            className="btn btn-accent"
+            onClick={handleGetCurrentLocation}
+            disabled={isGettingLocation}
+            aria-label="Use my current location"
+          >
+            {isGettingLocation ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+            )}
+          </button>
         </div>
+        
+        {locationError && (
+          <div className="text-error text-sm mt-1">{locationError}</div>
+        )}
 
         <div className="w-full">
           <label className="label text-sm md:text-base">
