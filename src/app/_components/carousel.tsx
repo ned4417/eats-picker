@@ -6,22 +6,31 @@ interface CarouselProps {
   photos: string[];
 }
 
-const CarouselItem = memo(({ photo, index, onClick }: { photo: string; index: number; onClick: () => void }) => (
-  <div 
-    className="relative w-full h-full cursor-pointer group"
-    onClick={onClick}
-  >
-    <Image
-      src={photo}
-      alt={`Item ${index + 1}`}
-      fill
-      className="object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
-      loading={index === 0 ? "eager" : "lazy"}
-      quality={85}
-    />
-    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300 rounded-lg" />
-  </div>
-));
+const CarouselItem = memo(({ photo, index, onClick }: { photo: string; index: number; onClick: () => void }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  return (
+    <div 
+      className="relative w-full h-full cursor-pointer group"
+      onClick={onClick}
+    >
+      <Image
+        src={imageError ? `/fallback-${(index % 5) + 1}.jpg`.replace('fallback-1.jpg', 'breakfast.jpg')
+                         .replace('fallback-2.jpg', 'burger.jpg')
+                         .replace('fallback-3.jpg', 'dessert.jpg')
+                         .replace('fallback-4.jpg', 'fancy.jpg')
+                         .replace('fallback-5.jpg', 'tacos.jpg') : photo}
+        alt={`Item ${index + 1}`}
+        fill
+        className="object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+        loading={index === 0 ? "eager" : "lazy"}
+        quality={85}
+        onError={() => setImageError(true)}
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300 rounded-lg" />
+    </div>
+  );
+});
 
 CarouselItem.displayName = 'CarouselItem';
 
@@ -98,6 +107,28 @@ const Modal = memo(({ isOpen, onClose, children, currentIndex, totalItems, onPre
 });
 
 Modal.displayName = 'Modal';
+
+const ModalImage = memo(({ src, index }: { src: string; index: number }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  return (
+    <Image
+      src={imageError ? `/fallback-${(index % 5) + 1}.jpg`.replace('fallback-1.jpg', 'breakfast.jpg')
+                       .replace('fallback-2.jpg', 'burger.jpg')
+                       .replace('fallback-3.jpg', 'dessert.jpg')
+                       .replace('fallback-4.jpg', 'fancy.jpg')
+                       .replace('fallback-5.jpg', 'tacos.jpg') : src}
+      alt={`Full size ${index + 1}`}
+      fill
+      className="object-contain"
+      quality={100}
+      priority
+      onError={() => setImageError(true)}
+    />
+  );
+});
+
+ModalImage.displayName = 'ModalImage';
 
 const ImageCarousel = memo(({ photos }: CarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -229,13 +260,9 @@ const ImageCarousel = memo(({ photos }: CarouselProps) => {
         onNext={nextSlide}
       >
         <div className="relative w-full max-w-5xl h-full max-h-[90vh]">
-          <Image
-            src={photos[currentIndex]}
-            alt={`Full size ${currentIndex + 1}`}
-            fill
-            className="object-contain"
-            quality={100}
-            priority
+          <ModalImage 
+            src={photos[currentIndex]} 
+            index={currentIndex} 
           />
         </div>
       </Modal>

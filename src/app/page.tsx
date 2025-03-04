@@ -20,6 +20,7 @@ const Home: React.FC = () => {
   const [selectedDistance, setSelectedDistance] = useState<string>('10');
   const [originLat, setOriginLat] = useState<string>('');
   const [originLon, setOriginLon] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const autocompleteRef = useRef<HTMLInputElement>(null);
   const [currentPhotos, setCurrentPhotos] = useState<string[]>([
     breakfast.src,
@@ -51,13 +52,28 @@ const Home: React.FC = () => {
   }, [randomRestaurant]);
 
   // Function to fetch and set random restaurant data
-  const fetchRandomRestaurant = (address: string, radius: string) => {
-    axios.get(`/api/getRestaurants?address=${encodeURIComponent(address)}&radius=${radius}`)
+  const fetchRandomRestaurant = (address: string, radius: string, isReroll: boolean = false, previousId?: string) => {
+    setIsLoading(true);
+    setRandomRestaurant(null);
+    
+    let url = `/api/getRestaurants?address=${encodeURIComponent(address)}&radius=${radius}`;
+    
+    // Add reroll and previousId parameters if this is a reroll
+    if (isReroll) {
+      url += `&reroll=true`;
+      if (previousId) {
+        url += `&previousId=${previousId}`;
+      }
+    }
+    
+    axios.get(url)
       .then(response => {
         setRandomRestaurant(response.data); // Set randomRestaurant state with fetched data
+        setIsLoading(false);
       })
       .catch(error => {
         console.error('Error fetching restaurant:', error);
+        setIsLoading(false);
         // Handle error
       });
   };
@@ -69,8 +85,10 @@ const Home: React.FC = () => {
 
   // Function to choose another restaurant
   const chooseAnotherRestaurant = () => {
+    // Pass the current restaurant's place_id to exclude it from the next selection
+    const previousId = randomRestaurant?.place_id;
     setRandomRestaurant(null); // Reset randomRestaurant state to trigger a new fetch
-    fetchRandomRestaurant(selectedAddress, selectedDistance);
+    fetchRandomRestaurant(selectedAddress, selectedDistance, true, previousId);
   };
 
   const handleSliderOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,15 +141,26 @@ const Home: React.FC = () => {
 
       {/* Restaurant details section */}
       <div className="w-full max-w-2xl">
-        {randomRestaurant && (
-          <div className="p-3 sm:p-4 md:p-6 text-center bg-base-200 rounded-lg shadow-md mb-6">
+        {isLoading ? (
+          <div className="p-6 text-center">
+            <div className="flex flex-col items-center justify-center">
+              <div className="loading loading-spinner loading-lg text-accent mb-3"></div>
+              <p className="text-base md:text-lg animate-pulse">Finding the perfect spot for you...</p>
+            </div>
+          </div>
+        ) : randomRestaurant ? (
+          <div className="p-3 sm:p-4 md:p-6 text-center bg-base-200 rounded-lg shadow-md mb-6 animate-fade-in">
             <h2 className="text-xl sm:text-2xl md:text-3xl mb-2 font-bold">{randomRestaurant.name}</h2>
             <p className="text-sm sm:text-base md:text-lg mb-1">{randomRestaurant.formatted_address}</p>
             <p className="text-xs sm:text-sm md:text-base pt-2 opacity-80">
               {distanceLabelText} <span className="font-medium">{randomRestaurant.distance}</span>
             </p>
           </div>
-        )}
+        ) : selectedAddress ? (
+          <div className="p-3 text-center opacity-70">
+            <p>Select a location to find restaurants</p>
+          </div>
+        ) : null}
       </div>
 
       {/* Carousel section */}
