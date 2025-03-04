@@ -128,24 +128,23 @@ const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => 
 
 
       <div>
-  {/* Conditionally render restaurant details */}
-  {randomRestaurant && (
-    <div className=" sm:p-2 lg:p-6 text-center">
-      <p className="sm:text-lg md:text-xg lg:text-3xl mb-2 font-bold">{randomRestaurant.name}</p>
-      <p className="sm:text-md md:text-lg lg:text-2xl">{randomRestaurant.formatted_address}</p>
-      <p className="sm:text-sm md:text-md lg:text-lg pt-3">{distanceLabelText} {randomRestaurant.distance}</p>
-      {/* Add more restaurant details as needed */}
-    </div>
-  )}
-</div>
-    <div className="sm:p-2 lg:p-6 w-full sm:h-48 lg:h-96 overflow-hidden">
-      <ImageCarousel photos={currentPhotos} />
-    </div>
+        {/* Conditionally render restaurant details */}
+        {randomRestaurant && (
+          <div className="sm:p-2 lg:p-6 text-center">
+            <p className="sm:text-lg md:text-xg lg:text-3xl mb-2 font-bold">{randomRestaurant.name}</p>
+            <p className="sm:text-md md:text-lg lg:text-2xl">{randomRestaurant.formatted_address}</p>
+            <p className="sm:text-sm md:text-md lg:text-lg pt-3">{distanceLabelText} {randomRestaurant.distance}</p>
+          </div>
+        )}
+      </div>
+      <div className="w-full max-w-4xl mx-auto aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
+        <ImageCarousel photos={currentPhotos} />
+      </div>
       <div>
-          {/* Conditionally render the "Choose Another Restaurant" button */}
-          {selectedAddress && randomRestaurant && (
-          <button className="mt-2 btn btn-primary" onClick={chooseAnotherRestaurant}>Roll the culinary dice again</button>
-          )}
+        {/* Conditionally render the "Choose Another Restaurant" button */}
+        {selectedAddress && randomRestaurant && (
+          <button className="mt-4 btn btn-primary" onClick={chooseAnotherRestaurant}>Roll the culinary dice again</button>
+        )}
       </div>      
     </main>
   );
