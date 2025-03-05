@@ -166,6 +166,11 @@ const ModalImage = memo(({ src, index }: { src: string; index: number }) => {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
+  // Reset loading state when src changes
+  useEffect(() => {
+    setIsLoading(true);
+  }, [src]);
+  
   return (
     <div className="relative w-full h-full">
       {isLoading && (
@@ -201,6 +206,9 @@ const ImageCarousel = memo(({ photos }: CarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Simple navigation functions
   const nextSlide = useCallback(() => {
@@ -214,6 +222,35 @@ const ImageCarousel = memo(({ photos }: CarouselProps) => {
   const openModal = () => {
     setIsModalOpen(true);
   };
+
+  // Handle touch events for swipe functionality
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = null;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    
+    const swipeDistance = touchEndX.current - touchStartX.current;
+    const minSwipeDistance = 50; // Minimum distance to register as a swipe
+    
+    if (swipeDistance > minSwipeDistance) {
+      // Swiped right, go to previous slide
+      prevSlide();
+    } else if (swipeDistance < -minSwipeDistance) {
+      // Swiped left, go to next slide
+      nextSlide();
+    }
+    
+    // Reset touch coordinates
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }, [nextSlide, prevSlide]);
 
   // Auto-advance slides every 5 seconds if not in modal view
   useEffect(() => {
@@ -255,11 +292,17 @@ const ImageCarousel = memo(({ photos }: CarouselProps) => {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-xl group">
+    <div 
+      className="relative w-full h-full rounded-lg overflow-hidden shadow-xl group"
+      ref={modalRef}
+    >
       {/* Main Image */}
       <div 
         className="relative w-full h-full cursor-pointer"
         onClick={openModal}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <Image
           src={imageError ? `/fallback-${(currentIndex % 8) + 1}.jpg`.replace('fallback-1.jpg', 'breakfast.jpg')
@@ -346,7 +389,12 @@ const ImageCarousel = memo(({ photos }: CarouselProps) => {
         photos={photos}
         setCurrentIndex={setCurrentIndex}
       >
-        <div className="relative w-full max-w-6xl h-full max-h-[90vh]">
+        <div 
+          className="relative w-full max-w-6xl h-full max-h-[90vh]"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <ModalImage 
             src={photos[currentIndex]} 
             index={currentIndex} 
