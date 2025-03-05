@@ -13,6 +13,9 @@ import burger from '../../public/burger.jpg';
 import dessert from '../../public/dessert.jpg';
 import fancy from '../../public/fancy.jpg';
 import tacos from '../../public/tacos.jpg';
+import pizza from '../../public/pizza.jpg';
+import sushi from '../../public/sushi.jpg';
+import pasta from '../../public/pasta.jpg';
 
 const Home: React.FC = () => {
   const [randomRestaurant, setRandomRestaurant] = useState<any>(null); // Adjust the type according to your API response
@@ -29,7 +32,10 @@ const Home: React.FC = () => {
     burger.src,
     dessert.src,
     fancy.src,
-    tacos.src
+    tacos.src,
+    pizza.src,
+    sushi.src,
+    pasta.src
   ]);
   const [searchLabelText, setSearchLabelText] = useState("Search Radius from Address to search: ");
   const [distanceLabelText, setDistanceLabelText] = useState("Distance from selected address: ");
@@ -161,28 +167,32 @@ const Home: React.FC = () => {
 
       {/* Search section */}
       <div className="w-full max-w-xl px-2 space-y-4 mb-6">
-        <div className="flex w-full gap-2">
-          <div className="flex-grow">
-            <GoogleAddressAutocomplete 
-              onSelect={handleSelectPlace} 
-              setSelectedAddress={setSelectedAddress} 
-              radius={selectedDistance} 
-            />
+        <div className="w-full">
+          <label className="label text-sm font-medium mb-1">Enter an address or use your location</label>
+          <div className="flex w-full gap-2">
+            <div className="flex-grow">
+              <GoogleAddressAutocomplete 
+                onSelect={handleSelectPlace} 
+                setSelectedAddress={setSelectedAddress} 
+                radius={selectedDistance} 
+              />
+            </div>
+            <button 
+              className="btn btn-outline border-2 border-accent hover:bg-accent/20 tooltip tooltip-left"
+              data-tip="Use my current location"
+              onClick={handleGetCurrentLocation}
+              disabled={isGettingLocation}
+              aria-label="Use my current location"
+            >
+              {isGettingLocation ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
           </div>
-          <button 
-            className="btn btn-accent"
-            onClick={handleGetCurrentLocation}
-            disabled={isGettingLocation}
-            aria-label="Use my current location"
-          >
-            {isGettingLocation ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-              </svg>
-            )}
-          </button>
         </div>
         
         {locationError && (
@@ -233,7 +243,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Carousel section */}
-      <div className="w-full max-w-4xl mx-auto aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] mb-6">
+      <div className="w-full max-w-4xl mx-auto aspect-square sm:aspect-[4/3] lg:aspect-[16/9] mb-6">
         <ImageCarousel photos={currentPhotos} />
       </div>
 
